@@ -4,6 +4,8 @@ const cors = require("cors");
 const app = express();
 const port = 3000;
 
+
+
 /**
  * Extract domain from a url
  *
@@ -32,13 +34,12 @@ app.get("/bypass/*", async (req, res) => {
     const domain = extractDomain(url);
 
     try {
-        // Fetch content of the root domain
-        const response = await axios.get("http://" + domain);
-        let html = response.data;
+        const response = await axios.get(url);
+        const html = response.data;
 
-        // Replace links and resources to point to the proxy server
-        html = html.replace(/<a (.*?)href="(https?:)?\/\/(.*?)"/gi, '<a $1href="' + bypassAPILink + '$3"');
-        html = html.replace(/(src|href)="(https?:)?\/\/(.*?)"/gi, '$1="' + bypassAPILink + '$3"');
+        /**
+         * Relative url should be absolute
+         */
 
         res.send(prepareFinalData(html, domain));
     } catch (error) {
@@ -46,7 +47,6 @@ app.get("/bypass/*", async (req, res) => {
         res.status(500).send("Error occurred while fetching the URL");
     }
 });
-
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
