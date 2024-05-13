@@ -1,5 +1,5 @@
 const iFrames = [...document.querySelectorAll("iframe[bypass-x-frame]")];
-const bypassAPILink = "https://77.37.51.164:443/bypass/";
+const bypassAPILink = "http://localhost:3000/bypass/";
 
 iFrames.forEach(async (frame) => {
     let link = frame.getAttribute("bypass-x-frame");
