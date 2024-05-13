@@ -32,12 +32,13 @@ app.get("/bypass/*", async (req, res) => {
     const domain = extractDomain(url);
 
     try {
-        const response = await axios.get(url);
-        const html = response.data;
+        // Fetch content of the root domain
+        const response = await axios.get("http://" + domain);
+        let html = response.data;
 
-        /**
-         * Relative url should be absolute
-         */
+        // Replace links and resources to point to the proxy server
+        html = html.replace(/<a (.*?)href="(https?:)?\/\/(.*?)"/gi, '<a $1href="' + bypassAPILink + '$3"');
+        html = html.replace(/(src|href)="(https?:)?\/\/(.*?)"/gi, '$1="' + bypassAPILink + '$3"');
 
         res.send(prepareFinalData(html, domain));
     } catch (error) {
@@ -45,6 +46,7 @@ app.get("/bypass/*", async (req, res) => {
         res.status(500).send("Error occurred while fetching the URL");
     }
 });
+
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
